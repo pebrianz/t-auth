@@ -3069,7 +3069,7 @@ dependencies = [
 
 [[package]]
 name = "t-auth"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aes-gcm",
  "arboard",

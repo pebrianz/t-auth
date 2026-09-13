@@ -2,6 +2,9 @@
 name = "t-auth"
 version = "0.3.0"
 edition = "2024"
+description = "TOTP Authenticator TUI"
+license = "MIT"
+repository = "https://github.com/pebrianz/t-auth"
 
 [dependencies]
 aes-gcm = "0.10.3"
