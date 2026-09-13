@@ -2,10 +2,10 @@ use crate::app::{
     AppData,
     common::{consts::MAX_PASSWORD_LENGTH, helpers::create_vault},
     components::*,
-    router::*,
 };
 use argon2::Argon2;
 use iocraft::prelude::*;
+use iocraft_router::*;
 use std::{cell::RefCell, thread};
 
 #[component]

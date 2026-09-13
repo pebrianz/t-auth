@@ -1,5 +1,6 @@
-use crate::app::{Router, common::consts::MAX_PASSWORD_LENGTH, components::*};
+use crate::app::{common::consts::MAX_PASSWORD_LENGTH, components::*};
 use iocraft::prelude::*;
+use iocraft_router::Router;
 use std::sync::Arc;
 
 #[component]

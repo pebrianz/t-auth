@@ -1366,6 +1366,11 @@ name = "hashbrown"
 version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
+dependencies = [
+ "allocator-api2",
+ "equivalent",
+ "foldhash",
+]
 
 [[package]]
 name = "heck"
@@ -1587,9 +1592,9 @@ dependencies = [
 
 [[package]]
 name = "iocraft"
-version = "0.8.4"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aba598b3bb6724ec114b885638d12105223c44d7cf19e5eb38b12baa9a28a29d"
+checksum = "41b8c1ddc08a912247397bef7b99f9ed409eecc711557f5523fe362d880d6f98"
 dependencies = [
  "bitflags",
  "crossterm",
@@ -1610,6 +1615,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.119",
+]
+
+[[package]]
+name = "iocraft-router"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "06934966b66e11d272da1775317c917eb1e0dfabd1ddb761db2fcf37b9aa67ff"
+dependencies = [
+ "hashbrown 0.17.1",
+ "iocraft",
 ]
 
 [[package]]
@@ -3054,7 +3069,7 @@ dependencies = [
 
 [[package]]
 name = "t-auth"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "aes-gcm",
  "arboard",
@@ -3063,6 +3078,7 @@ dependencies = [
  "hmac 0.12.1",
  "image",
  "iocraft",
+ "iocraft-router",
  "rqrr",
  "serde",
  "serde_json",

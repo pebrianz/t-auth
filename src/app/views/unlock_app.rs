@@ -1,5 +1,5 @@
 use crate::app::{
-    AppData, Router,
+    AppData,
     common::{
         consts,
         utils::{decrypt, kdf},
@@ -9,6 +9,8 @@ use crate::app::{
 use argon2::Argon2;
 use iocraft::prelude::*;
 use std::{sync::Arc, thread};
+
+use iocraft_router::Router;
 
 #[derive(Clone)]
 pub struct Data {

@@ -1,5 +1,5 @@
 use crate::app::{
-    AppData, Router,
+    AppData,
     components::{Footer, Header, TextBlock},
     helpers::create_vault,
     views::{main::Account, unlock_app::Data},
@@ -8,6 +8,7 @@ use arboard::Clipboard;
 use argon2::Argon2;
 use image;
 use iocraft::prelude::*;
+use iocraft_router::Router;
 use std::{sync::Arc, thread};
 use xcap::Monitor;
 

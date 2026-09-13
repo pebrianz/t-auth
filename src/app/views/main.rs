@@ -48,8 +48,10 @@ pub struct AccountTableProps {
 
 pub struct AccountData {
     pub selected: usize,
-    pub accounts: Vec<Account>,
+    pub accounts: Arc<Vec<Account>>,
     pub password: String,
+    pub name: String,
+    pub issuer: String,
 }
 
 #[component]
@@ -96,9 +98,12 @@ pub fn AccountTable(mut hooks: Hooks, props: &AccountTableProps) -> impl Into<An
 
     let names_len = names.len();
 
+    let names_arc = Arc::new(names.clone());
+    let code_arc = Arc::new(code.clone());
+    let accounts_arc = Arc::new(props.accounts.clone());
+    let issuer_arc = Arc::new(issuers.clone());
+
     hooks.use_terminal_events({
-        let code = code.clone();
-        let accounts = props.accounts.clone();
         move |event| match event {
             TerminalEvent::Key(key) if key.kind == KeyEventKind::Press => match key.code {
                 KeyCode::Down => {
@@ -112,7 +117,8 @@ pub fn AccountTable(mut hooks: Hooks, props: &AccountTableProps) -> impl Into<An
                     }
                 }
                 KeyCode::Char('c') => {
-                    let value = code[selected.get()].clone();
+                    let selected = selected.get();
+                    let value = code_arc[selected].clone();
                     thread::spawn(move || {
                         let mut clipboard = Clipboard::new().unwrap();
                         clipboard.set_text(value).unwrap();
@@ -121,12 +127,15 @@ pub fn AccountTable(mut hooks: Hooks, props: &AccountTableProps) -> impl Into<An
                     });
                 }
                 KeyCode::Char('d') => {
+                    let selected = selected.get();
                     router.navigate(
                         "confirm_delete",
                         Arc::new(AccountData {
-                            selected: selected.get(),
-                            accounts: accounts.clone(),
+                            selected: selected,
+                            accounts: accounts_arc.clone(),
                             password: data.password.to_string(),
+                            name: names_arc[selected].clone(),
+                            issuer: issuer_arc[selected].clone(),
                         }),
                     );
                 }

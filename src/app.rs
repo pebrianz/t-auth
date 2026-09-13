@@ -1,13 +1,12 @@
 mod common;
 mod components;
-mod router;
 mod views;
 
 use argon2::{Algorithm, Argon2, Params, Version};
 use common::{consts, helpers};
 use components::Loading;
 use iocraft::prelude::*;
-use router::*;
+use iocraft_router::*;
 use std::{fs, path::PathBuf, thread};
 use views::*;
 

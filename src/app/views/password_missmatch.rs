@@ -1,5 +1,6 @@
-use crate::app::{Router, components::*};
+use crate::app::components::*;
 use iocraft::prelude::*;
+use iocraft_router::Router;
 
 #[component]
 pub fn PasswordMissmatch(mut hooks: Hooks) -> impl Into<AnyElement<'static>> {
