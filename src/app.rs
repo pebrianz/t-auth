@@ -89,7 +89,8 @@ pub fn App(mut hooks: Hooks) -> impl Into<AnyElement<'static>> {
                                 Route("password_missmatch", || element! {PasswordMissmatch}.into()),
                                 Route("setup", || element! {Setup}.into()),
                                 Route("vault_status", || element! {VaultStatus}.into()),
-                                Route("add_account", || element! {AddAccount}.into())
+                                Route("add_account", || element! {AddAccount}.into()),
+                                Route("confirm_delete", || element! {ConfirmDelete}.into())
                             ]
                         )}
                     }

@@ -1,19 +1,13 @@
 use crate::app::{
-    AppData, Router,
+    Router,
     components::{Footer, Header},
-    helpers::create_vault,
     views::unlock_app::Data,
 };
-use arboard::{Clipboard, LinuxClipboardKind, SetExtLinux};
-use argon2::Argon2;
+use arboard::Clipboard;
 use iocraft::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_json;
-use std::{
-    sync::Arc,
-    thread,
-    time::{Duration, Instant},
-};
+use std::{sync::Arc, thread, time::Duration};
 use totp_rs::Totp;
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -52,8 +46,16 @@ pub struct AccountTableProps {
     accounts: Vec<Account>,
 }
 
+pub struct AccountData {
+    pub selected: usize,
+    pub accounts: Vec<Account>,
+    pub password: String,
+}
+
 #[component]
 pub fn AccountTable(mut hooks: Hooks, props: &AccountTableProps) -> impl Into<AnyElement<'static>> {
+    let mut router = hooks.use_context::<Router>().clone();
+    let data = hooks.use_context::<Arc<Data>>().clone();
     let mut update = hooks.use_state(|| false);
 
     thread::spawn(move || {
@@ -96,6 +98,7 @@ pub fn AccountTable(mut hooks: Hooks, props: &AccountTableProps) -> impl Into<An
 
     hooks.use_terminal_events({
         let code = code.clone();
+        let accounts = props.accounts.clone();
         move |event| match event {
             TerminalEvent::Key(key) if key.kind == KeyEventKind::Press => match key.code {
                 KeyCode::Down => {
@@ -116,6 +119,16 @@ pub fn AccountTable(mut hooks: Hooks, props: &AccountTableProps) -> impl Into<An
 
                         thread::sleep(Duration::from_secs(1000));
                     });
+                }
+                KeyCode::Char('d') => {
+                    router.navigate(
+                        "confirm_delete",
+                        Arc::new(AccountData {
+                            selected: selected.get(),
+                            accounts: accounts.clone(),
+                            password: data.password.to_string(),
+                        }),
+                    );
                 }
                 _ => {}
             },
@@ -138,15 +151,7 @@ pub fn AccountTable(mut hooks: Hooks, props: &AccountTableProps) -> impl Into<An
 #[component]
 pub fn Main(mut hooks: Hooks) -> impl Into<AnyElement<'static>> {
     let mut system = hooks.use_context_mut::<SystemContext>();
-    let app_data = hooks.use_context::<State<AppData>>().clone();
-    let argon2i = hooks.use_context::<Argon2>().clone();
     let router = hooks.use_context::<Router>();
-
-    let data = router.get_state::<Data>();
-    let string: String = data.decryption.to_string();
-
-    let accounts: Vec<Account> =
-        serde_json::from_str::<Vec<Account>>(&string).unwrap_or(Vec::new());
 
     let mut app_exit = hooks.use_state(|| false);
 
@@ -154,12 +159,17 @@ pub fn Main(mut hooks: Hooks) -> impl Into<AnyElement<'static>> {
         system.exit();
     }
 
+    let data: Arc<Data> = router.get_state::<Data>();
+    let string: String = data.decryption.to_string();
+
+    let accounts: Vec<Account> =
+        serde_json::from_str::<Vec<Account>>(&string).unwrap_or(Vec::new());
+
     hooks.use_terminal_events({
         let mut router = router.clone();
-        let mut accounts = accounts.clone();
+        let data = data.clone();
         move |event| match event {
             TerminalEvent::Key(key) if key.kind != KeyEventKind::Release => match key.code {
-                KeyCode::Char('q') => app_exit.set(true),
                 KeyCode::Char('a') => router.navigate(
                     "add_account",
                     Arc::new(Data {
@@ -167,28 +177,7 @@ pub fn Main(mut hooks: Hooks) -> impl Into<AnyElement<'static>> {
                         password: data.password.clone(),
                     }),
                 ),
-                KeyCode::Char('d') => {
-                    accounts.pop();
-                    let string: String = serde_json::to_string(&accounts).unwrap();
-                    let mvstring = string.clone();
-                    let argon2i = argon2i.clone();
-                    let mvdata = data.clone();
-                    thread::spawn(move || {
-                        create_vault(
-                            argon2i,
-                            &mvdata.password.to_string(),
-                            &app_data.read().path,
-                            &mvstring.as_bytes(),
-                        )
-                    });
-                    router.navigate(
-                        "main",
-                        Arc::new(Data {
-                            decryption: string,
-                            password: data.password.to_string(),
-                        }),
-                    );
-                }
+                KeyCode::Char('q') => app_exit.set(true),
                 _ => {}
             },
             _ => {}
@@ -203,7 +192,11 @@ pub fn Main(mut hooks: Hooks) -> impl Into<AnyElement<'static>> {
                     Text(content: "◈ Accounts")
                     Text(content: "◈ OTP")
                 }
-                AccountTable(accounts: accounts){}
+                ContextProvider(value: Context::Owned(Box::new(router.clone()))) {
+                    ContextProvider(value: Context::Owned(Box::new(data))) {
+                        AccountTable(accounts: accounts)
+                    }
+                }
             }
             Footer {
                 Text(content: "[A] Add")

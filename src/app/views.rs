@@ -1,4 +1,5 @@
 mod add_account;
+mod confirm_delete;
 mod confirm_password;
 mod main;
 mod password_missmatch;
@@ -7,6 +8,7 @@ mod unlock_app;
 mod vault_status;
 
 pub use add_account::AddAccount;
+pub use confirm_delete::ConfirmDelete;
 pub use confirm_password::ConfirmPassword;
 pub use main::Main;
 pub use password_missmatch::PasswordMissmatch;

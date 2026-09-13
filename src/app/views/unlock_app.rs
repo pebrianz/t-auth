@@ -10,6 +10,7 @@ use argon2::Argon2;
 use iocraft::prelude::*;
 use std::{sync::Arc, thread};
 
+#[derive(Clone)]
 pub struct Data {
     pub decryption: String,
     pub password: String,
